@@ -1,0 +1,62 @@
+Iterated Prisoners Dilemma
+
+After talking to Glenn
+
+[ ] research non-zero sum versions
+[ ] Non-zero sum game version
+https://link.springer.com/content/pdf/10.1007%2Fs00182-011-0288-4.pdf
+- interesting way to formulate non zero sum.
+-- work on mixed strategies?
+-- repeated game?
+-- multiple colonels ~ relates to voting
+
+[ ] Iterated prisoner's dilemna
+* so for IPD players don't know how many times they will play - otherwise they will defect (NE)
+
+[ ] Dan Ashlock
+[ ] evolutionary stable strategy
+[ ] Hawk Dove
+
+
+
+[ ] Middle of next week.
+
+Applications:
+Voting
+Terrorism
+Battle
+
+Format:
+
+Problem Statement/Game to explore in laymen's terms
+
+Evolutionary algorithm on IPD of a non-zero sum variant of Blotto.
+- sum of total payoffs from each 'battlefield'
+
+Some sort of iterated game. 
+
+Hi Professor Glenn,
+
+I hope you enjoyed your weekend. I looked into some non-zero sum variants of Blotto and how to translate this into an iterated game similar to IPD. 
+
+https://link.springer.com/content/pdf/10.1007%2Fs00182-011-0288-4.pdf
+
+The above paper provides a pretty basic notion of non-zero sum where instead of the payoff being who wins the most battlefields, the payoffs become the sum of the payoffs from each battlefield with asymmetry on the payoffs for both colonels. This makes the game non-zero sum, however this is very similar to Prisoner's Dilemma.
+
+The paper also notes that pure strategy exists with non-zero probability. I think looking into Evolutionary Algo generated strategies would be interesting as this relates to resource allocation and social planning. I also did not find any papers specifically on IPD and evolutionary algorithms on Blotto. I did find this paper:
+
+http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=CD43D56A634E2CE95546F67A9ED772F8?doi=10.1.1.597.2147&rep=rep1&type=pdf
+
+Where he uses a genetic algorithm to estimate mixed strategies for the one-shot game.
+
+Some paths I think I can take this project include looking into
+- Using Evolutionary algorithms to build a bot that can learn from their opponent to win in the repated game
+- Mixed Strategies for IPD
+
+At the moment I have no experience with genetic algorithms, but will start looking into these and building a simple blotto simulator. Let me know what you think, I am happy to come in to chat as well.
+
+Best,
+
+Alex
+
+coin flips vs. split army -> any difference in strategy => changes variance of plays

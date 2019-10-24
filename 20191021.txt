@@ -1,0 +1,12 @@
+Notes
+
+Tried crossing and doing the rounding, ended up with a pretty steady state.
+
+Agent A's strategies dominated all of Agent B's strategies.
+
+-> Need to have a good mutation function
+
+Strategies after 10 iterations are all the same -> sign that mutation isn't doing enough or that crossing is too much. Im probably crossing strategies too much, because i only work with the top 15 and they are likely very similar.
+
+- better mutation
+- better crossing - randomly choosing parents.
