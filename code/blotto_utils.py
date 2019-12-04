@@ -1,6 +1,8 @@
 import sys
 import random
 
+MAGNITUDES = [1,1,1,1,1,2,2,2,3,3,4,5]
+
 # from the POV of player 1
 # if symmetric payoffs then ut1 == ut2
 
@@ -84,11 +86,16 @@ def make_integer(strat, seed=0):
     return base_strat
 
 
-def mutate_noise(strat, noises, seed=0):
+def mutate_noise(strat, noises, magnitude=0, seed=0):
     random.seed(seed)
     while True:
         noise = random.choice(noises)
-        new_strat = [x+y for x, y in zip(strat, noise)]
+        mag = random.choice(MAGNITUDES)
+        # print(mag)
+        new_strat = [x+(y*mag) for x, y in zip(strat, noise)]
         if all(map((lambda x: x >= 0), new_strat)):
             return new_strat
 
+def l1_norm(a, b):
+    return sum(map(abs, [x-y for x, y in zip(a, b)]))
+    
