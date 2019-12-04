@@ -4,7 +4,7 @@ import blotto_utils as bu
 def play_game(agent_a, agent_b, weight_a, weight_b, trials=100):
     a_wins = 0
     for a, b in zip(agent_a.play(trials=trials), agent_b.play(trials=trials)):
-        a_wins += bu.battle(a, b, weight_a, weight_b, split=True, seed=(bu.l1_norm(a, b)))
+        a_wins += bu.battle(a, b, weight_a, weight_b, split=False, seed=(bu.l1_norm(a, b)))
 
     return a_wins
     

@@ -2,9 +2,10 @@ import sys
 import numpy as np
 
 class Agent:
-    def __init__(self, strategies, probabilities):
-        assert len(strategies) == len(probabilities)
-        assert sum(probabilities) == 1
+    def __init__(self, strategies, probabilities=None):
+        if probabilities:
+            assert len(strategies) == len(probabilities)
+            assert sum(probabilities) == 1
         
         self.strategies = strategies
         self.probabilities = probabilities
@@ -17,7 +18,7 @@ class Agent:
         
 
 if __name__ == '__main__':
-    temp = Agent([[1,2,3]], [1])
+    temp = Agent([[1,2,3]])
     # counts = {}
     for x in temp.play():
         print(x)

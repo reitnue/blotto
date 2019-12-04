@@ -3,3 +3,25 @@
 [ ] crossover
 - depends on how 'different' parents are
 - 'different' : L2 distance or L1 distance
+
+linear prgramming for strategies we have co-evolved (100 x 100)
+
+genetic algorithm on the mixed strategies
+
+What I have:
+1. Co-evolved strategies - (?) steady state
+- can i get a steady state
+
+-> if so we can use thesee strategies over a sample of 100 samples to linear program
+
+-> if not then change magnitude of mutation
+Because strategies are really common as a result of crossover of the 14 best of each set, each set of generations pinpoints a good weighting of troops that beats a similar weighting of troops -> this gives hope that we have cyclic behavior in the strategies since it turns out weighting is great on two big battlefields.
+
+I will run evolutions over many generations to see if such a pattern exists.
+
+bascially what strategy beats ur strategy is the next generations -> graphic to see pattern?
+
+2. Mixed Strategies -> from co-evolved strategies
+
+measure comparing two strategies
+if a beats b and how far apart they are
