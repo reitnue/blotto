@@ -1,11 +1,13 @@
 import sys
 import numpy as np
+import blotto_utils as bu
 
 class Agent:
     def __init__(self, strategies, probabilities=None):
         if probabilities:
             assert len(strategies) == len(probabilities)
             # assert sum(probabilities) == 1
+            probabilities = bu.normalize_probabilities(probabilities)
         
         self.strategies = strategies
         self.probabilities = probabilities
