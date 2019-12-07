@@ -1,12 +1,14 @@
 import sys
 import random
+import scipy.optimize
+import numpy as np
 
 MAGNITUDES = [1,1,1,1,1,2,2,2,3,3,4,5]
-
+WEIGHTS = [1,2,3,4,5,6,7,8,9,10]
 # from the POV of player 1
 # if symmetric payoffs then ut1 == ut2
 
-def battle(col1, col2, ut1, ut2, split=False, seed=0):
+def battle(col1, col2, ut1=WEIGHTS, ut2=WEIGHTS, split=False, seed=0):
     random.seed(seed)
     assert len(col1) == len(col2) and len(ut1) == len(ut2) and len(col1) == len(ut1)
     sum1, sum2 = 0, 0
@@ -99,3 +101,58 @@ def mutate_noise(strat, noises, magnitude=0, seed=0):
 def l1_norm(a, b):
     return sum(map(abs, [x-y for x, y in zip(a, b)]))
     
+def make_neg(mat):
+    for i in range(len(mat)):
+        for j in range(len(mat[i])):
+            mat[i][j] *= -1
+
+def transpose(mat):
+    new_mat = []
+    for j in range(len(mat[0])):
+        new_mat.append([])
+    for i in range(len(mat)):
+        for j in range(len(mat[i])):
+            new_mat[j].append(mat[i][j])
+    return new_mat
+
+def make_payoff(a_strats, b_strats):
+    payoff = []
+    for a_index in range(len(a_strats)):
+        payoff.append([])
+        for b_index in range(len(b_strats)):
+            payoff[a_index].append(battle(a_strats[a_index], b_strats[b_index]))
+            
+    return payoff
+
+def blotto_nash(strats_a, strats_b):
+    payoff = make_payoff(strats_a, strats_b)
+    make_neg(payoff)
+    payoff = transpose(payoff)
+    bounds = (0.0, 1.0)
+
+    rows = len(strats_a)
+    cols = len(strats_b)
+
+    # offense
+    b_ub = [-1.0] * cols
+    c = [1.0] * rows
+
+    result = scipy.optimize.linprog(c, payoff, b_ub, None, None, bounds)
+    value = 1.0 / result.fun # v from lecture
+    x = [xi * value for xi in result.x]
+    new_x = [float("%.6f" % abs(i)) for i in x]
+    
+    # defense
+    b_ub = [1.0] * rows
+    c = [-1.0] * cols
+
+    pay_off = make_payoff(strats_a, strats_a)
+    result = scipy.optimize.linprog(c, pay_off, b_ub, None, None, bounds)
+    y = [-yi * value for yi in result.x]
+    new_y = [float("%.6f" % abs(i)) for i in y]
+    return new_x, new_y
+
+def normalize_probabilities(probs):
+    probs = np.array(probs)
+    probs /= probs.sum()
+    return probs
