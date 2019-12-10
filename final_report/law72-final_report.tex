@@ -1,0 +1,155 @@
+%Jennifer Pan, August 2011
+
+\documentclass[12pt,letter]{article}
+	% basic article document class
+	% use percent signs to make comments to yourself -- they will not show up.
+\usepackage{fancyhdr, enumitem}
+
+\usepackage{amsmath,amssymb,amsfonts,amsthm,tikz}
+\newtheorem{theorem}{Theorem}	% basic article document class
+	% packages that allow mathematical formatting
+\usepackage{amsopn}
+\DeclareMathOperator{\lcm}{lcm}
+
+\usepackage{stackengine}
+
+\usepackage{graphicx}
+	% package that allows you to include graphics
+
+\usepackage{setspace}
+	% package that allows you to change spacing
+\usepackage[footskip=0pt]{geometry}
+
+%: \onehalfspacing
+	% text become 1.5 spaced
+\doublespacing
+\usepackage{verbatim}
+
+\usepackage{fullpage}
+	% package that specifies normal margins
+\usepackage{multicol}
+\usepackage{pgfplots}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+
+
+\begin{document}
+	% line of code telling latex that your document is beginning
+
+
+\title{CPSC 490 Project Proposal: \\
+       Applying Genetic Algorithms to Build an Optimal Mixed Strategy Agent for Colonel Blotto Game}
+
+\author{Alex Wang (law72)\\
+   		Advisor: Professor James Glenn}
+
+\date{2019 September 19}
+	% Note: when you omit this command, the current dateis automatically included
+ 
+\maketitle 
+	% tells latex to follow your header (e.g., title, author) commands.
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{prop}{Proposition}
+
+%commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\IdTwo}{\begin{pmatrix} 1 & 0\\0 & 1 \end{pmatrix}}
+\newcommand{\abs}[1]{\left| #1 \right|}
+
+\newcommand{\twodiagmat}[2]{\begin{pmatrix} #1 & 0\\0 & #2 \end{pmatrix}}
+\newcommand{\pf}{\vskip 5pt \noindent \textit{Proof. }}
+\newcommand{\sol}{\vskip 5pt \noindent \textit{Solution. }}
+
+\newcommand{\pfi}{\vskip 5pt \noindent \textit{Proof by induction. }}
+\renewcommand{\qed}{\hfill $\square$}
+\newcommand{\assoc}{\text{ [associativity]}}
+\newcommand{\aut}{\text{Aut}}
+\newcommand{\inn}{\text{Inn}}
+\newcommand\barbelow[1]{\stackunder[1.2pt]{$#1$}{\rule{.8ex}{.075ex}}}
+
+\newcommand{\glv}{\text{GL}(V)}
+\newcommand{\gln}{\text{GL}_n(\F_p)}
+\newcommand{\Mod}[1]{\ (\mathrm{mod}\ #1)}
+\newcommand{\Var}[1]{\mathrm{Var}(#1)}
+\newcommand{\w}[1]{\overline{#1}}
+\newcommand{\eet}{e^{i\theta}}
+\newcommand{\eent}{e^{-i\theta}}
+\newcommand{\eit}{e^{it}}
+\newcommand{\enit}{e^{-it}}
+
+% 305 commands
+\newcommand{\interior}[1]{%
+  {\kern0pt#1}^{\mathrm{o}}%
+}
+
+\section{Background} %=====================================================%
+\subsection{Colonel Blotto Game}
+Colonel Blotto Game or simply Blotto is a two-player zero-sum one-shot simultaneous game. Blotto was first proposed by \'{E}mile Borel in 1921, who solved the case with 3 battlefields and symmetric resources. The game attempts to simulate the psychology of players. In the game, two colonels are tasked with directing and dividing $N$ troops over $k$ battlefields, simultaneously. A colonel 'wins' the battlefield if the number of troops they put on that battlefield is greater than that of the other colonel. In the case of a tie, we will determine the winner by a coin flip, although some versions instead attribute half a win to both colonels. 
+
+As in this game, there exists a finite number of strategies and being only a two player game, game theorists have long studied Blotto and have sought out important characteristics of the game such as Nash Equilibrium. Pure strategies have been quite well studied in the past, but mixed strategies are a different ball game. They are more complicated, but have the opportunity to give insight into different types of strategies.
+
+As an application, this game easily extends notions of the electoral college, where two candidates can distribute their funds to different states, each of which have different payoffs given the number of electoral college votes they give. Blotto has other natural extensions to resource allocation problems and developing a better understanding of strategies through mixed strategies can further an understanding of optimal play.
+
+\subsection{Example}
+Consider the follow example of a game play. Suppose each colonel has 6 troops to place in 3 battlefields. Suppose Colonel 1 chooses $(2, 2, 2)$ as their allocation and Colonel 2 chooses $(1, 2, 3)$. See that Colonel 1 wins battlefield 1 and loses battlefield 3, and wins battlefield 2 up to a coin flip. One natural question a game theorist would ask is what are the Nash Equilibrium.
+
+\subsection{FiveThirtyEight Data Set}
+The data I will start off working with is provided by FiveThirtyEight. The site ran a blotto game with online participants where each strategy was ran with every other strategy and used to determine the overall winner. In this game, which I will begin with had 10 battlefields with weights 
+\[[1, 2, \dots, 10]\]
+and every player was given 100 troops.
+
+\subsection{Non-Zero-Sum}
+Unlike the zero-sum case, where each Colonel either wins or loses. An interesting extension of any project that looks at strategies is to see if the strategy would do well in a non-zero-sum version of the game. In this case we define the non-zero-sum version of the game to be where the payoff $U_1 = \sum_i u_{i, 1}$ where $u_i$ is the payoff from battlefield $i$ for colonel 1.
+
+And using such a definition we can extend this one-shot game to an iterated version similar iterated prisoners dilemma which is a well studied game theoretic problem.
+
+\section{Motivation for Genetic Algorithms} %=====================================================%
+The motivation for utilizing Genetic Algorithms over other learning techniques is that strategies in Blotto are related to one another. Intuitively one thinks that if a strategy is a good strategy, a slight perturbation or mutation should also yield a strategy that does similar in performance.
+
+In order to come up with a mixed strategies, we would like to have a set of good strategies to derive a probability distribution. Additionally such a process would allow us, the tester, to instead of coming up with all possible strategies, just sample a subset of strategies, making the process more tractable and efficient.
+
+Initially I will utilize a simple framework for our Genetic Algorithm and look into different algorithms as well as spend time parameter fitting.
+\begin{lstlisting}[mathescape, tabsize=4, basicstyle=\fontfamily{lmvtt}\selectfont,]
+START
+Generate the initial population
+Compute fitness
+REPEAT
+    Selection
+    Crossover
+    Mutation
+    Compute fitness
+UNTIL population has converged
+STOP
+\end{lstlisting}
+\section{Project Outline} %=====================================================%
+First I intend to build a framework to run Blotto games as well as incorporating data from FiveThirtyEight. Then I will start running genetic algorithms on existing strategies using strategies from FiveThirtyEight as a benchmark or source of strategies for mutations. Then using the results I will construct a mixed strategy agent as demonstrated in a paper by Tofias (2007), where we evolve players against a self-evolving player and then estimate probability distributions of strategies to determine mixed-strategy profiles. Then use the mixed-strategy agent to see its performance against a non-zero sum version of Blotto. 
+
+\section{Deliverables} %=====================================================%
+\begin{enumerate}
+	\item Blotto game framework, both zero-sum and non-zero-sum.
+	\item Genetic Algorithm to compute approximate mixed strategies with tested parameters
+	\item Agent that uses the above mixed strategies in non-zero-sum cases
+	\item Report detailing the approaches and difficulties encountered
+\end{enumerate}
+\section{Extensions} %=====================================================%
+\begin{enumerate}
+	\item Extension to multi-player blotto
+	\item Extension to asymmetric versions of the game as in Tofias (2007)
+	\item Extension to find Mixed Strategies in the iterated version
+\end{enumerate}
+\section{Works Cited} %=====================================================%
+\url{https://en.wikipedia.org/wiki/Blotto_game} \\
+\url{https://cmns.umd.edu/news-events/features/3426} - solving blotto \\
+\url{https://fivethirtyeight.com/features/a-peaceful-but-not-peaceful-transition-of-power-in-riddler-nation/} \\
+\url{https://www.economist.com/graphic-detail/2015/09/14/how-countries-spend-their-money?fsrc=scn/fb/te/bl/ed/howcountriesspendtheirmoney&fbclid=IwAR2hJEPhM9jFWJTRsxLc7QWmpUcpgBoClF7CD0hV7ISeTteJ_tpjp6mnS5s} - example of a sequential colonel blotto game \\
+\url{http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=CD43D56A634E2CE95546F67A9ED772F8?doi=10.1.1.597.2147&rep=rep1&type=pdf} - paper we will be trying to simulate
+
+\end{document}
