@@ -280,7 +280,7 @@ Hooah!"
 3,3,3,3,12,12,3,29,29,3,"I choose to concentrate on towers 8 and 9, hopefully winning them almost all the time. I should also win towers 5 and 6 much of the time making 28 points for a victory. If I miss one or both of 5 and 6, I hope to make it up with scouting forces of 3 soldiers which may be more than most scouts."
 1,1,1,1,1,1,9,20,30,35,I want castle 10 baby!!!!!!!!!
 1,0,0,0,0,9,10,10,35,35,"For the goal of winning 28 points, I plan to take castle 9 and 10. Then win any two among castle 7-9. I'm avoiding castle 4 - - 5 as they seemed to be hotly contested in prior matches"
-0.00001,0,0,0,5,5,5,15,30,40,"the previous winners clearly picked a lane, some highs and mids, or some mids only, my lane is to go top heavy. As long as I can claim two top tier and two lower tier, I can win."
+0,0,0,0,5,5,5,15,30,40,"the previous winners clearly picked a lane, some highs and mids, or some mids only, my lane is to go top heavy. As long as I can claim two top tier and two lower tier, I can win."
 1,1,0,9,14,20,25,30,0,0,"Just give up on the biggest ones, probably a waste "
 1,0,1,1,19,5,5,6,35,28,:)
 1,1,4,12,20,2,2,6,30,22,"Randomly, kind of based off the previous renditions. "
@@ -928,7 +928,7 @@ Magic?"
 The idea is that, while most people will invest a lot into the top castles (because they are valuable and because they expect others to do the same), many will not invest much into the bottom castles. This makes them (hopefully) cheap to obtain, and allows a pretty hefty force to go to castle 7 to (again, hopefully) outdo those who want castle 7, but who value it 4th most."
 1,2,2,0,0,4,6,8,34,43,win 10/9 and two average others
 5,5,20,5,5,20,5,5,10,20,"Not sure, just playing! "
-0,2p,0,0,20,20,20,20,0,0,Try to get to 28 in a way that average person wouldn't do.
+0,20,0,0,20,20,20,20,0,0,Try to get to 28 in a way that average person wouldn't do.
 0,0,4,15,18,6,4,2,28,23,Random ass guessing
 2,5,5,17,19,7,7,6,18,14,"Played around with numbers in excel until I found a combo that would beat all of the top 5 entries from both of the past 2 contests, as well as the mean numbers from both"
 0,0,1,18,2,24,3,22,3,27,"go for 4 castles that add up to just over half of points: 10, 8, 6 & 4. put some troops for most other castles in case i get wiped out on my targets by someone who sends few or no troops elsewhere. go all in on castles 6 & 4 (4 & 4.5 troops per point) with less investment in castles 10 & 8 (2.7 & 2.5 troops per point). send 0.33-0.43 troops per point to castles 3, 5, 7 & 9. this troop alignment happens to beat the top 10 previous finishers (5 from first round & 5 from second round). the main weakness of this strategy is if someone sends a ton of troops to castles 10, 9, 8 & 7 however not many players seem to take that strategy. the other weakness is an odd-numbered-focused strategy where the opponent sends a ton of troops to castle 10 or 8, plus a moderate number of troops to castles 9, 7, 5, 3, 2 and/or 1."
@@ -1179,7 +1179,6 @@ The focus was on beating the winning strategies from the last cycle.  34 for cas
 0,0,0,0,10,12,15,18,21,24,Started proportionally and then let go of the lesser castles
 0,0,12,1,1,23,3,3,33,24,Used a genetic algorithm (the same as last competition) to explore distributions that would be good against the second round distributions and the first and second round distributions combined. Then used the same algorithm to optimize against *those* and the first and second round distributions simultaneously.
 0,7,7,10,0,0,25,26,27,0,"I need at least 28 points to win. I expect a lot of people will spend heavily on 10, so I skipped it and focuses on 9, 8, and 7. Then I spent enough with the lower numbers to make up the remaining 4 points in a few ways."
-2- z,4- z,4- z,7- 15,12- 20,15,20,22,7,7,
 1,2,1,12,22,4,8,10,23,17,I used an excel sheet and found a strategy by trial and error and some calculations that would best every previous winning line up and that would also beat the average line up.
 1,2,1,12,22,4,8,10,23,17,I used an excel sheet and found a strategy by trial and error and some calculations that would best every previous winning line up and that would also beat the average line up.
 3,2,5,6,4,12,12,22,22,22,
