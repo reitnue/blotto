@@ -96,14 +96,17 @@ def make_integer(strat, seed=0):
 
 def mutate_noise(strat, noises, mutations=1, seed=0):
     random.seed(seed)
-    for _ in range(random.choice(MAGNITUDES)):
+    curr_strat = strat
+    for _ in range(mutations):
         while True:
             noise = random.choice(noises)
             mag = random.choice(MAGNITUDES)
             # print(mag)
-            new_strat = [x+(y*mag) for x, y in zip(strat, noise)]
+            new_strat = [x+(y*mag) for x, y in zip(curr_strat, noise)]
             if all(map((lambda x: x >= 0), new_strat)):
-                return new_strat
+                curr_strat = new_strat
+                break
+    return curr_strat
 
 def l1_norm(a, b):
     return sum(map(abs, [x-y for x, y in zip(a, b)]))
@@ -185,3 +188,4 @@ def load_pickle(file_name):
         func = gzip.open
     with func(file_name, 'rb') as db:
         return pickle.load(db)
+
