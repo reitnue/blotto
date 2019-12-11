@@ -2,6 +2,15 @@ import sys
 import random
 import scipy.optimize
 import numpy as np
+import os
+import pickle
+import gzip
+import re
+gz_re = re.compile(r'.gz$')
+import math
+import random
+import datetime
+
 
 MAGNITUDES = [1,1,1,1,1,2,2,2,3,3,4,5]
 WEIGHTS = [1,2,3,4,5,6,7,8,9,10]
@@ -23,7 +32,6 @@ def battle(col1, col2, ut1=WEIGHTS, ut2=WEIGHTS, split=False, seed=0):
                 sum2 += ut2[index] / 2
             else:
                 rand_num = random.random()
-#                 print(rand_num)
                 if rand_num > 0.5:
                     sum2 += ut2[index]
                 else:
@@ -31,10 +39,9 @@ def battle(col1, col2, ut1=WEIGHTS, ut2=WEIGHTS, split=False, seed=0):
     if sum1 > sum2:
         return 1
     elif sum1 < sum2:
-        return 0
+        return -1
     else:
-        return 0.5
-
+        return 0
 
 # noise arrays
 # return [-mag, mag, 0, \dots, 0]
@@ -87,20 +94,23 @@ def make_integer(strat, seed=0):
         base_strat[index] += 1
     return base_strat
 
-
-def mutate_noise(strat, noises, magnitude=0, seed=0):
+def mutate_noise(strat, noises, mutations=1, seed=0):
     random.seed(seed)
-    while True:
-        noise = random.choice(noises)
-        mag = random.choice(MAGNITUDES)
-        # print(mag)
-        new_strat = [x+(y*mag) for x, y in zip(strat, noise)]
-        if all(map((lambda x: x >= 0), new_strat)):
-            return new_strat
+    for _ in range(random.choice(MAGNITUDES)):
+        while True:
+            noise = random.choice(noises)
+            mag = random.choice(MAGNITUDES)
+            # print(mag)
+            new_strat = [x+(y*mag) for x, y in zip(strat, noise)]
+            if all(map((lambda x: x >= 0), new_strat)):
+                return new_strat
 
 def l1_norm(a, b):
     return sum(map(abs, [x-y for x, y in zip(a, b)]))
-    
+
+def l2_norm(a, b):
+    return math.sqrt(sum([(x-y) ** 2 for x, y in zip(a, b)]))
+
 def make_neg(mat):
     for i in range(len(mat)):
         for j in range(len(mat[i])):
@@ -126,8 +136,11 @@ def make_payoff(a_strats, b_strats):
 
 def blotto_nash(strats_a, strats_b):
     payoff = make_payoff(strats_a, strats_b)
+    # print(payoff)
     make_neg(payoff)
+    # print(payoff)
     payoff = transpose(payoff)
+    # print(payoff)
     bounds = (0.0, 1.0)
 
     rows = len(strats_a)
@@ -136,8 +149,9 @@ def blotto_nash(strats_a, strats_b):
     # offense
     b_ub = [-1.0] * cols
     c = [1.0] * rows
-
+    # print(payoff)
     result = scipy.optimize.linprog(c, payoff, b_ub, None, None, bounds)
+    # print(result)
     value = 1.0 / result.fun # v from lecture
     x = [xi * value for xi in result.x]
     new_x = [float("%.6f" % abs(i)) for i in x]
@@ -146,7 +160,8 @@ def blotto_nash(strats_a, strats_b):
     b_ub = [1.0] * rows
     c = [-1.0] * cols
 
-    pay_off = make_payoff(strats_a, strats_a)
+    pay_off = make_payoff(strats_a, strats_b)
+    # print(pay_off)
     result = scipy.optimize.linprog(c, pay_off, b_ub, None, None, bounds)
     y = [-yi * value for yi in result.x]
     new_y = [float("%.6f" % abs(i)) for i in y]
@@ -156,3 +171,17 @@ def normalize_probabilities(probs):
     probs = np.array(probs)
     probs /= probs.sum()
     return probs
+
+def save_pickle(file_name, to_save):
+    func = open
+    if gz_re.search(file_name):
+        func = gzip.open
+    with func(file_name, 'wb') as db:
+        pickle.dump(to_save, db)
+
+def load_pickle(file_name):
+    func = open
+    if gz_re.search(file_name):
+        func = gzip.open
+    with func(file_name, 'rb') as db:
+        return pickle.load(db)
