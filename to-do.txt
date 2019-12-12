@@ -8,6 +8,8 @@ linear prgramming for strategies we have co-evolved (100 x 100)
 
 genetic algorithm on the mixed strategies
 
+also perturb mixed strategies slightly to show mixed nash equilibrium
+
 What I have:
 1. Co-evolved strategies - (?) steady state
 - can i get a steady state
@@ -25,3 +27,22 @@ bascially what strategy beats ur strategy is the next generations -> graphic to 
 
 measure comparing two strategies
 if a beats b and how far apart they are
+
+12/07
+(0) evolutionary alg agent
+
+Make an agent from Nash Equilibrium of random strats (1)
+
+Compare it to other agent
+
+Make a new agent using NE (linear programming) and evolutionary algorithm (2)
+
+Compare against other agents
+
+Compare all against test set (data set 2 and 3)
+
+Lastly test against test
+
+What if start of genetic algorithm were randomly generated strategies vs. randomly sampled from data set
+
+*** evoluationary algo on mixed strategies (agents) from agents generated from lin prog and evolutionary algorithm

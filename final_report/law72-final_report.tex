@@ -20,9 +20,10 @@
 	% package that allows you to change spacing
 \usepackage[footskip=0pt]{geometry}
 
-%: \onehalfspacing
+\onehalfspacing
 	% text become 1.5 spaced
-\doublespacing
+%: \doublespacing
+
 \usepackage{verbatim}
 
 \usepackage{fullpage}
@@ -33,19 +34,19 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{listings}
-
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
 \begin{document}
 	% line of code telling latex that your document is beginning
 
 
-\title{CPSC 490 Project Proposal: \\
-       Applying Genetic Algorithms to Build an Optimal Mixed Strategy Agent for Colonel Blotto Game}
+\title{CPSC 490 Final Project: \\
+       Colonel Blotto Game: Applying Genetic Algorithms to Build an Optimal Mixed Strategy Agent}
 
 \author{Alex Wang (law72)\\
    		Advisor: Professor James Glenn}
 
-\date{2019 September 19}
+\date{2019 December 12}
 	% Note: when you omit this command, the current dateis automatically included
  
 \maketitle 
@@ -101,17 +102,25 @@ As an application, this game easily extends notions of the electoral college, wh
 \subsection{Example}
 Consider the follow example of a game play. Suppose each colonel has 6 troops to place in 3 battlefields. Suppose Colonel 1 chooses $(2, 2, 2)$ as their allocation and Colonel 2 chooses $(1, 2, 3)$. See that Colonel 1 wins battlefield 1 and loses battlefield 3, and wins battlefield 2 up to a coin flip. One natural question a game theorist would ask is what are the Nash Equilibrium.
 
-\subsection{FiveThirtyEight Data Set}
+\subsection{Data Set: FiveThirtyEight}
 The data I will start off working with is provided by FiveThirtyEight. The site ran a blotto game with online participants where each strategy was ran with every other strategy and used to determine the overall winner. In this game, which I will begin with had 10 battlefields with weights 
 \[[1, 2, \dots, 10]\]
 and every player was given 100 troops.
 
-\subsection{Non-Zero-Sum}
-Unlike the zero-sum case, where each Colonel either wins or loses. An interesting extension of any project that looks at strategies is to see if the strategy would do well in a non-zero-sum version of the game. In this case we define the non-zero-sum version of the game to be where the payoff $U_1 = \sum_i u_{i, 1}$ where $u_i$ is the payoff from battlefield $i$ for colonel 1.
+The data will give us a relevant starting point for building a Mixed Strategy Agent, as constructing all strategies is computationally expensive.
 
-And using such a definition we can extend this one-shot game to an iterated version similar iterated prisoners dilemma which is a well studied game theoretic problem.
+\section{Project Timeline}
+\begin{enumerate}
+	\item Blotto game framework (zero-sum)
+	\item Genetic Algorithm that co-evolves two sets of strategies against each other. (describe the algorithm and its parameters)
+	\item Linear programming on static strategies to find Mixed NE
+	\item Evolutionary Algorithm with Linear Programming
+	\item Results of Agent vs. Agent matchups
+\end{enumerate}
 
-\section{Motivation for Genetic Algorithms} %=====================================================%
+
+\section{Genetic Algorithm} %=====================================================%
+\subsection{Motivation for Genetic Algorithms} %=====================================================%
 The motivation for utilizing Genetic Algorithms over other learning techniques is that strategies in Blotto are related to one another. Intuitively one thinks that if a strategy is a good strategy, a slight perturbation or mutation should also yield a strategy that does similar in performance.
 
 In order to come up with a mixed strategies, we would like to have a set of good strategies to derive a probability distribution. Additionally such a process would allow us, the tester, to instead of coming up with all possible strategies, just sample a subset of strategies, making the process more tractable and efficient.
@@ -129,27 +138,227 @@ REPEAT
 UNTIL population has converged
 STOP
 \end{lstlisting}
-\section{Project Outline} %=====================================================%
-First I intend to build a framework to run Blotto games as well as incorporating data from FiveThirtyEight. Then I will start running genetic algorithms on existing strategies using strategies from FiveThirtyEight as a benchmark or source of strategies for mutations. Then using the results I will construct a mixed strategy agent as demonstrated in a paper by Tofias (2007), where we evolve players against a self-evolving player and then estimate probability distributions of strategies to determine mixed-strategy profiles. Then use the mixed-strategy agent to see its performance against a non-zero sum version of Blotto. 
 
-\section{Deliverables} %=====================================================%
+\subsection{Co-Evolution}
+In considering Blotto, although our game is a symmetric 2-player game. We still use a co-evolutionary framework, because this allows us the ease to change our algorithm to consider asymmetric cases of the came in further study.
+
+Like an individual evolutionary framework, the only difference is that we seed the algorithm with two sets of co-evolving strategies. Instead of computing fitness against other strategies within their own set we compute fitness against the other set and iterate in this fashion.
+
+\subsection{Fitness Calculation}
+Because we are co-evolving, we compute fitness simply, by computing how many wins a specific strategy $s$ will have against the strategies in the other set.
+
+\subsection{Initial Population Seed} %=====================================================%
+\subsubsection{Random Sample of Test Set vs. Random Sample of all possible Strategies}
+
+For the initial population of our genetic algorithm the natural idea is take a random sample of all the possible strategies. In this case with $n = 100$ troops and $k = 10$ battlefields, the total number of strategies is $\binom{109}{9} > 4.2e12$. And so each time we wish to run our algorithm we would need to sample from that many possible strategies.
+
+A simplification we make and will show is a viable simplification for random sampling of all strategies is random sampling from our training set. As before we train the evolutionary algorithm on a subset of it due to computation reasons. Before understanding results we first consider the difference of these methods. What is the magnitude of the effect that sampling from our training set would introduce? We note that after a few generations of our genetic algorithm the strategies under both initial populations follow a similar cycle of differences. The idea is that after the first few generations and additional randomness that comes from random sampling of all strategy is lost, because we select and continue evolving the best strategies. For this reason we think that random sampling the test set is viable.
+
+Also since some of the data points are generated through genetic algorithm and so we might think by sampling from the training set we can reduce the work of our genetic algorithm, because we will have encoded some degree of complexity already by including these "trained" strategies.
+
+Note to generate a faux-random sampling we compute all the partitions of 100 and sample a random permutation of a random partition as a random strategy. Running this initial population against a randomly sampled one from our training set, the resulting agent of each does similar against the rest of the training set.
+
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/random_all_strat_results.png}
+\includegraphics[width=15cm]{../figures/random_sample_train_results.png}
+\centering
+\end{figure}
+As we can see they have a similar win percentage against the training set, although it is not a lot of data it gives us confidence that the resulting agents produced from both initial populations are similar enough to make this computational change.
+
+Consider "distance" between the agents produced
+
+Results of running each process against the train/test set?
+
+Benefits of either?
+\subsection{Parameters}
 \begin{enumerate}
-	\item Blotto game framework, both zero-sum and non-zero-sum.
-	\item Genetic Algorithm to compute approximate mixed strategies with tested parameters
-	\item Agent that uses the above mixed strategies in non-zero-sum cases
-	\item Report detailing the approaches and difficulties encountered
+	\item size of co-evolving set
+	\item mutation magnitudes - using a standard list of magnitudes or binomial distribution
+	\item number of mutations
 \end{enumerate}
-\section{Extensions} %=====================================================%
-\begin{enumerate}
-	\item Extension to multi-player blotto
-	\item Extension to asymmetric versions of the game as in Tofias (2007)
-	\item Extension to find Mixed Strategies in the iterated version
-\end{enumerate}
+
+\subsubsection{Crossover}
+Another step in our genetic algorithm is crossover, the combination of more than 1 strategies to improve genetic variability.
+
+For pure strategies we used a simple crossover method for two strategies
+\[a = (a_i), b = (b_j)\]
+Where we get
+\[a \times b = \left(\frac{a_i + b_i}{2}\right)_i\]
+
+This method effectively brings two strategies closer to each other, one thing that is worth mentioning is that one can change the weighting of each strategy in the crossover, it might be of interest if we weight the "better" of the two strategies more in later iterations of the genetic algorithm.
+
+\subsubsection{Mutations}
+An important component of genetic algorithms lie in how we mutate to get new strategies. Consider the pure strategy
+\[(a_1, a_2, \dots, a_{10})\]
+Our method of mutation is to take a random value $x \in [1, 5]$ and reallocate $x$ troops from a random battlefield $i$ to a random battlefield $j$. So the new mutated strategy is
+\[(a_1, \dots, a_i - x, \dots, a_j + x, \dots, a_{10})\]
+Where $i$ and $j$ can be switched, based on signs, because we randomly pick a reallocation and and independently pick a magnitude.
+
+Lastly we check to make sure this is a valid strategy where $\sum_{a'_i} = 100$ and $a'_i \geq 0, \forall i$.
+
+\subsection{Selection and the rest of the Algorithm}
+I implemented to methods for this part of the genetic algorithm. One works with the top half of the original strategies, the other works with the top 20\% and generates strategies from pairs of the best.
+
+\paragraph{Half} The GA that uses the top half, for each strategy in the top 50\% of all strategies we add it and a mutated version of it to the next generation. This strategy has more genetic variation as we are keeping more strategies that are not necessarily related to each other.
+
+\paragraph{Top} The other GA we consider all possible pairs of the top 15 strategies and do crossover and mutation on the pair, generating the next generation of strategies. This GA approach instinctually produces strategies similar to themselves up to small variations. The idea to keep this results in consider mixed agent generation, because we would rather have a strong strategy instead of a lot of weaker more variant strategies.
+
+\subsection{Convergence?}
+Unlike most genetic algorithms, whose goal is to converge to a stable population. When considering Blotto, I have found that this is unlikely the case, because of how reliant the game is on the strategy of the other player. A single small perturbation/mutation of a strategy can yield a strategy that defeats it, hence unlike in other GA's where a small change in genetic makeup makes little difference, in Blotto it makes all the difference.
+
+From the plot below we see that as generations go on, the distances between strategies almost cycles giving us more confidence that there really will exist no convergent population.
+\begin{figure}[h]
+\includegraphics[width=15cm]{../figures/l1-cycle-ga.jpg}
+\centering
+\end{figure}
+
+
+\subsection{Agent Generation}
+In our genetic algorithm we produce generations of strategies. We do not think convergence exists in the sense that the convergent set is the best set. We note that the resulting generation of strategies is likely a genetically homogenous set of strategies. So I will save the top strategy from each generation.
+
+The initial genetic algorithm agent will simply be an agent that picks one of these top strategies with uniform probability.
+
+\section{Linear Programming} %=====================================================%
+\subsection{Process}
+We use linear programming to find mixed Nash Equilibrium for a given pair of sets of strategies. We think this is useful, because a mixed Nash effectively removes bad strategies from the initial set. Suppose we have a set of strategies $S$ where $s_i \in S$ are strategies. If WLOG $s_k \succ s_1$ for some $k$ ie $s_1$ is strictly dominated by $s_k$, then we would never want to play $s_1$. Through finding a mixed Nash Equilibrium using linear programming we remove the possibility of play $s_1$, because strictly dominated strategies are never played in mixed Nash.
+
+Finding a Mixed Nash Equilibrium is a simple starting place to construct a simple agent without the use of a genetic algorithm.
+
+\subsection{Parameters}
+The only parameter we need to consider are the two sets of strategies we run the linear programming to find Nash Equilibrium for. In reality it matters what set of strategies we pick, however for most parts we generate that independently and need only choose the size of such a sample. Note that increasing the size of each set will increase the run-time and that we take this into account when constructing agents.
+
+\subsection{Results - Test/Training}
+When considering the linear programming model, one thing we consider the size of the initial population size. So plotting results of the linear program agent against the data set we see the plots in the appendix.
+
+Of note is that the results are greater than 50 \%. Also comparing the standard agent against the Linear Programming Agent it make sense that they do strictly worse, giving us more confidence that apply linear programming to find Mixed Nash Equilibrium is strictly better.
+
+\subsection{Why is this important/Extensions}
+We include this method as an Agent generation method, because finding Nash Equilibrium is a relatively straightforward first instinct when consider two player zero-sum games. Hence this framework works as a good baseline for the performance of our other agents.
+
+Another thing is that this method gives us a tool to weed out similar strategies. One thing that is immediately noticed with considering strategies for Blotto are the plethora of strategies and also how similar strategies seem. Such as the following
+\[(1, 1, 1, 1, 1, 1, 1, 1, 46, 46) \,\, \& \,\, (0, 2, 1, 1, 1, 1, 1, 1, 46, 46)\]
+What really is the difference between these two strategies? Using linear programming to find Nash will let us remove the "duplicates" of similar kinds of strategies. I claim that strategies can be classified based on a sort of meta-strategy. % elaborate more
+
+Also of note is how similar strategies can have drastically different results, because the "best" strategies win by a hair as this implies less wasting of resources.
+
+\subsection{Plots}
+See Appendix for plots of linear programming agent results.
+
+\subsection{Drawbacks}
+When generating Linear Programming Agents one drawback is that the resulting agent is only allowed to play a subset of strategies inputed.
+
+\section{Evolutionary Algorithm with Linear Programming} %=====================================================%
+\subsection{Why is this necessary}
+When seeded with data from the test set - the results on the test set converge to around 50\%. The initial downtrend likely as a result of overcompensating for beating the strategies at the beginning that do really well against all strategies $\to$ these strategies will suck against all the test set. However as the algorithm continues to build up strategies after running the linear programming to find mixed nash on the strategies this suffices to rid the set of strictly dominated strategies that this makes sense for the strategies to move together toward better results.
+
+\begin{figure}[h]
+\includegraphics[width=15cm]{../figures/data-set-1-win-rate-evol-lin.jpg}
+\centering
+\end{figure}
+
+Additionally we use this plot to see that around Generation 200, the strategies start not having a big influence, and so we run GA's up to generation 200.
+
+\subsection{Benefits}
+The benefits include the genetic variation of the genetic algorithm along with the removal and re-weighting based on a Mixed Nash Equilibrium for the strategies we produce in this manner.
+
+\subsection{Agent Construction}
+Unlike our Agent construction for a general Genetic Algorithm, we first run a linear program to determine the Mixed Nash Equilibrium to assign probabilities to strategies.
+
+\subsection{Results against other agents}
+For plots see appendix.
+For metrics we ran the newly constructed agent against the respective agent for Standard Agent (agent a/b), Linear Programming Agent (lin prog a/b), and the test set of strategies. 
+
+\paragraph{half} The parameters we use are binomial distribution magnitude of mutation and mutation number of 10, we choose 5 as an optimized amount to beating the training set which is the first 538 data set.
+
+\paragraph{top} The parameters we used for this mutation strategy was binomially distributed magnitudes of mutation, however we only mutate 1 time as this mutation strategy is made to keep strategies close together.
+
+We see that our Linear Program boosted genetic algorithm agent wins very close to 50\% of the time against the simple Linear Programming Agent, however fails to win more against the test set.
+
+It is however nice to see that with the linear programming addition that we end up beating the standard agent of choosing the strategies at uniform probability.
+%: why?
+One reason that we do not significantly better than the linear programming is likely, because the strategies that come out of the genetic algorithm do poorly against the initial population, which is what we train both the linear programming Mixed Nash and Genetic Algorithm on.
+
+
+
+
+\section{Difficulties and Challenges Faced}
+I used randomness in my genetic algorithms to facilitate proper mutations and so this part was very important to have implemented correctly in the beginning to ensure the correct implementation of the game.
+
+Run-time for genetic algorithm: Depending on the size of our initial population cross overs and mutations can take a while based on how many generations we run for.
+
+Also figuring out what the best way to evaluate agents was. It makes sense to make them play other people, but who is a worthy adversary? I determined this to be agents of a similar "level" and so used agents generated from the same initial population of strategies.
+
+\section{Conclusion}
+From the results of simple genetic algorithms it seems that a genetic algorithm may be overkill for the sake of beating a set of strategies like the ones we have from 538. This is probably due to the disjointed nature of Blotto strategies, where similar strategies can have vastly different results.
+
+In conclusion, the genetic algorithm approach becomes more valuable in the case of asymmetric games, where co-evolution becomes more useful in that we want to construct two different kinds of agents instead of an agent that would work for both sides.
+
+However Genetic algorithms have benefits in finding different classes strategies in Blotto, which is cyclic in nature. From the Genetic algorithm we can construct sets of strategies that work well against other "good" Blotto strategies. Hence with these strategies we get reasonably good pure strategies that we can exploit like we did in this project.
+
+\section{Extensions}
+\subsection{Non-Zero-Sum}
+Unlike the zero-sum case, where each Colonel either wins or loses. An interesting extension of any project that looks at strategies is to see if the strategy would do well in a non-zero-sum version of the game. In this case we define the non-zero-sum version of the game to be where the payoff $U_1 = \sum_i u_{i, 1}$ where $u_i$ is the payoff from battlefield $i$ for colonel 1.
+
+And using such a definition we can extend this one-shot game to an iterated version similar iterated prisoners dilemma which is a well studied game theoretic problem.
+
+\subsection{Genetic algorithm on these agents}
+A natural extension to running a genetic algorithm on pure strategies is to construct a genetic algorithm on mixed strategies. This is nice in that mixed strategies are closer to each other than pure strategies can be. So it is more likely that strategies converge or that the strategies we find end up being stronger over the agents we want to test it against.
+
 \section{Works Cited} %=====================================================%
-\url{https://en.wikipedia.org/wiki/Blotto_game} \\
-\url{https://cmns.umd.edu/news-events/features/3426} - solving blotto \\
-\url{https://fivethirtyeight.com/features/a-peaceful-but-not-peaceful-transition-of-power-in-riddler-nation/} \\
-\url{https://www.economist.com/graphic-detail/2015/09/14/how-countries-spend-their-money?fsrc=scn/fb/te/bl/ed/howcountriesspendtheirmoney&fbclid=IwAR2hJEPhM9jFWJTRsxLc7QWmpUcpgBoClF7CD0hV7ISeTteJ_tpjp6mnS5s} - example of a sequential colonel blotto game \\
-\url{http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=CD43D56A634E2CE95546F67A9ED772F8?doi=10.1.1.597.2147&rep=rep1&type=pdf} - paper we will be trying to simulate
+%\cite{https://en.wikipedia.org/wiki/Blotto_game} \\
+%\cite{https://fivethirtyeight.com/features/a-peaceful-but-not-peaceful-transition-of-power-in-riddler-nation/} \\
+%\cite{http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=CD43D56A634E2CE95546F67A9ED772F8?doi=10.1.1.597.2147&rep=rep1&type=pdf}
+
+\begin{thebibliography}{9}
+\bibitem{wiki} 
+\url{https://en.wikipedia.org/wiki/Blotto_game}
+ 
+\bibitem{538} 
+{https://fivethirtyeight.com/features/a-peaceful-but-not-peaceful-transition-of-power-in-riddler-nation/}
+ 
+\bibitem{paper} 
+\url{http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=CD43D56A634E2CE95546F67A9ED772F8?doi=10.1.1.597.2147&rep=rep1&type=pdf}
+\end{thebibliography}
+
+\clearpage
+
+\section{Appendix-Plots}
+
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/lin-prog-training-data-result.jpg}
+\centering
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/lin-prog-test-data-result.jpg}
+\centering
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/lin-prog-std-training-data-result.jpg}
+\centering
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/lin-prog-std-test-data-result.jpg}
+\centering
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/top-ga-linear-programming-a.jpg}
+\centering
+\end{figure}
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/top-ga-linear-programming-b.jpg}
+\centering
+\end{figure}
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/half-ga-linear-programming-a.jpg}
+\centering
+\end{figure}
+\begin{figure}[h!]
+\includegraphics[width=15cm]{../figures/half-ga-linear-programming-b.jpg}
+\centering
+\end{figure}
 
 \end{document}

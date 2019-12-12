@@ -100,7 +100,7 @@ def mutate_noise(strat, noises, mutations=1, seed=0):
     for _ in range(mutations):
         while True:
             noise = random.choice(noises)
-            mag = random.choice(MAGNITUDES)
+            mag = np.random.binomial(10, 0.5, 1)[0] # random.choice(MAGNITUDES)
             # print(mag)
             new_strat = [x+(y*mag) for x, y in zip(curr_strat, noise)]
             if all(map((lambda x: x >= 0), new_strat)):
